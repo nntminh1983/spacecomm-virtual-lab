@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%9B%B0%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<title>Space Comm Virtual Lab</title>
+<meta name="description" content="Interactive simulations for PH035IU Introduction to Space Communication — six modules covering all thirteen lectures.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top">
+  <span class="code">PH035IU</span>
+  <span class="name">Space Comm Virtual Lab</span>
+  <span class="sub">Introduction to Space Communication</span>
+  <span class="sp"></span>
+  <button class="tbtn" id="theme">Light</button>
+</header>
+
+<div class="shell">
+  <nav class="rail" id="rail"><div class="railttl">Simulation modules</div></nav>
+  <main id="main">
+
+  <!-- ======================= HOME ======================= -->
+  <section class="mod home" id="m0">
+    <div class="hero">
+      <h1>Six simulations for <em>thirteen</em> lectures</h1>
+      <p class="lede">Every module bundles two or three lectures into one live model. Move a slider and the geometry, the spectrum, the constellation or the budget all recompute — so the equation on the slide becomes something the class can push on. Numbers follow Roddy, <em>Satellite Communications</em>, and the ITU-R recommendations the course cites.</p>
+    </div>
+    <div class="grid6" id="cards"></div>
+    <div class="teach">
+      <h3>How to run these in class</h3>
+      <ul>
+        <li><b>Start from the worked example.</b> Each module opens on the preset used in the lecture, so the readout matches the number already on the slide. Then change one input and ask what should happen before releasing the mouse.</li>
+        <li><b>The presets are the course's own cases</b> — Ho Chi Minh City to VINASAT-1, Ka-band rain in Ho Chi Minh City, a C-band GEO budget, a 550 km LEO pass.</li>
+        <li><b>Everything is computed, not animated artwork.</b> If a student disputes a figure, open the step list inside the panel: each line shows the formula and its intermediate value.</li>
+      </ul>
+      <p class="src">Runs offline — no network needed once the page has loaded.</p>
+    </div>
+  </section>
+
+  <!-- ======================= M1 : ORBITS ======================= -->
+  <section class="mod" id="m1">
+    <header class="mhead">
+      <div class="chips"><span class="chip k">Lecture 1</span><span class="chip k">Lecture 2</span><span class="chip k">Lecture 3</span><span class="chip">Roddy ch. 1–3</span></div>
+      <h1>Orbits, Coverage and Look Angles</h1>
+      <p class="lede">One force balance sets everything else. Pick an altitude and the period, speed, horizon, pass length and propagation delay all follow from Kepler's third law — then point a real dish at a real satellite and read off azimuth, elevation and slant range.</p>
+    </header>
+
+    <div class="panels two">
+      <article class="panel">
+        <header><h2>Orbit explorer</h2><p class="ph">§1.5 force balance · §1.6 orbit classes · §2.4 Kepler's third law</p></header>
+        <div class="viz"><canvas id="c-orbit" width="900" height="520"></canvas></div>
+        <div class="ctrls c2">
+          <label class="ctrl"><span class="lab"><span>Altitude h</span><b id="v-alt">550 km</b></span>
+            <input type="range" id="s-alt" min="150" max="36500" value="550" step="10"></label>
+          <label class="ctrl"><span class="lab"><span>Elevation mask ε</span><b id="v-mask">10°</b></span>
+            <input type="range" id="s-mask" min="0" max="30" value="10" step="1"></label>
+        </div>
+        <div class="seg" id="seg-orbit">
+          <button data-h="340" aria-pressed="false">VLEO 340</button>
+          <button data-h="550" aria-pressed="true">LEO 550</button>
+          <button data-h="1200" aria-pressed="false">LEO 1200</button>
+          <button data-h="20200" aria-pressed="false">MEO / GNSS</button>
+          <button data-h="35786" aria-pressed="false">GEO</button>
+        </div>
+        <div class="kv" id="k-orbit"></div>
+        <div class="eq">T = 2π·√(a³/μ)      v = √(μ/a)      μ = 398 600 km³/s²      a = Rᴇ + h</div>
+      </article>
+
+      <article class="panel">
+        <header><h2>GEO look angles</h2><p class="ph">§3.2 azimuth, elevation and range — Example 3.4, Ho Chi Minh City to VINASAT-1</p></header>
+        <div class="viz"><canvas id="c-look" width="900" height="520"></canvas></div>
+        <div class="ctrls c2">
+          <label class="ctrl"><span class="lab"><span>Station latitude</span><b id="v-lat">10.82° N</b></span>
+            <input type="range" id="s-lat" min="-70" max="70" value="10.82" step="0.01"></label>
+          <label class="ctrl"><span class="lab"><span>Station longitude</span><b id="v-lon">106.63° E</b></span>
+            <input type="range" id="s-lon" min="-180" max="180" value="106.63" step="0.01"></label>
+          <label class="ctrl"><span class="lab"><span>Satellite longitude</span><b id="v-sat">132.00° E</b></span>
+            <input type="range" id="s-sat" min="-180" max="180" value="132" step="0.1"></label>
+        </div>
+        <div class="seg" id="seg-site">
+          <button data-site="10.82,106.63,132" aria-pressed="true">HCMC → VINASAT-1</button>
+          <button data-site="21.03,105.85,132">Hanoi → VINASAT-1</button>
+          <button data-site="51.50,-0.13,-27.5">London → 27.5°W</button>
+          <button data-site="-33.87,151.21,160">Sydney → 160°E</button>
+        </div>
+        <div class="kv" id="k-look"></div>
+        <div class="steps" id="st-look"></div>
+      </article>
+    </div>
+
+    <aside class="teach">
+      <h3>What to draw out of this module</h3>
+      <ul>
+        <li><b>Altitude buys period, and period costs everything else.</b> Drag from 550 km to GEO: the period goes from about 96 minutes to a sidereal day, one satellite's coverage grows from 3 % to 42 % of the globe, and the pass stops ending — but the one-way delay goes from 2 ms to 119 ms and the free-space loss rises by roughly 35 dB.</li>
+        <li><b>There is no altitude that wins.</b> Ask the class which column they would sacrifice for a voice call, for a GNSS fix, for a broadcast TV channel. Each answer picks a different row of the readout.</li>
+        <li><b>Elevation is the hidden variable.</b> Raise the mask from 0° to 20° and watch the usable pass collapse. This is the same angle that drives atmospheric and rain loss in Module 2.</li>
+        <li><b>Check the worked example.</b> The default preset reproduces Example 3.4 — Ho Chi Minh City to VINASAT-1 at 132° E gives roughly 111.6° azimuth, 58° elevation, 36 620 km range.</li>
+      </ul>
+      <p class="src">Rᴇ = 6378.14 km · a_GSO = 42 164 km · sidereal day = 86 164.1 s</p>
+    </aside>
+  </section>
+
+  <!-- ======================= M2 : PROPAGATION ======================= -->
+  <section class="mod" id="m2">
+    <header class="mhead">
+      <div class="chips"><span class="chip k">Lecture 4</span><span class="chip k">Lecture 9</span><span class="chip">ITU-R P.838 · P.618</span></div>
+      <h1>Propagation, Rain Fade and Polarization</h1>
+      <p class="lede">The atmosphere is the one part of the path that changes while you are using it. Here is the full ITU rain-attenuation procedure step by step, and the polarization geometry that decides whether a second channel on the same frequency is a gift or a source of interference.</p>
+    </header>
+
+    <div class="panels two">
+      <article class="panel">
+        <header><h2>Rain attenuation — the ITU procedure</h2><p class="ph">§4.4 specific attenuation γ = k·R<sup>α</sup> · effective path · time-percentage scaling</p></header>
+        <div class="viz"><canvas id="c-rain" width="900" height="470"></canvas></div>
+        <div class="ctrls c2">
+          <label class="ctrl"><span class="lab"><span>Frequency</span><b id="v-rf">20.0 GHz</b></span>
+            <input type="range" id="s-rf" min="4" max="50" value="20" step="0.5"></label>
+          <label class="ctrl"><span class="lab"><span>Elevation angle θ</span><b id="v-rel">50°</b></span>
+            <input type="range" id="s-rel" min="5" max="90" value="50" step="1"></label>
+          <label class="ctrl"><span class="lab"><span>Rain rate R₀.₀₁</span><b id="v-rr">95 mm/h</b></span>
+            <input type="range" id="s-rr" min="5" max="150" value="95" step="1"></label>
+          <label class="ctrl"><span class="lab"><span>Rain height h_R</span><b id="v-hr">4.90 km</b></span>
+            <input type="range" id="s-hr" min="2" max="6" value="4.9" step="0.05"></label>
+        </div>
+        <div class="seg dn" id="seg-pol">
+          <button data-p="V" aria-pressed="true">Vertical</button>
+          <button data-p="H">Horizontal</button>
+          <button data-p="C">Circular</button>
+        </div>
+        <div class="seg" id="seg-rain">
+          <button data-r="4,50,95,V" aria-pressed="true">C-band HCMC</button>
+          <button data-r="12,50,95,V">Ku-band HCMC</button>
+          <button data-r="20,50,95,V">Ka-band HCMC</button>
+          <button data-r="12,30,42,V">Ku-band, temperate</button>
+        </div>
+        <div class="kv" id="k-rain"></div>
+        <div class="steps" id="st-rain"></div>
+      </article>
+
+      <article class="panel">
+        <header><h2>Polarization and cross-polar isolation</h2><p class="ph">§4.6–4.7 mismatch loss · §4.9 XPD and frequency reuse · §4.10 Faraday rotation</p></header>
+        <div class="viz"><canvas id="c-pol" width="900" height="470"></canvas></div>
+        <div class="ctrls c2">
+          <label class="ctrl"><span class="lab"><span>Receiver tilt misalignment</span><b id="v-tilt">0°</b></span>
+            <input type="range" id="s-tilt" min="-90" max="90" value="0" step="1"></label>
+          <label class="ctrl"><span class="lab"><span>Axial ratio of wave</span><b id="v-ar">1.0 (linear→∞)</b></span>
+            <input type="range" id="s-ar" min="0" max="100" value="0" step="1"></label>
+          <label class="ctrl"><span class="lab"><span>Carrier frequency</span><b id="v-pf">4.0 GHz</b></span>
+            <input type="range" id="s-pf" min="1" max="30" value="4" step="0.5"></label>
+          <label class="ctrl"><span class="lab"><span>Total electron content</span><b id="v-tec">50 TECU</b></span>
+            <input type="range" id="s-tec" min="1" max="200" value="50" step="1"></label>
+        </div>
+        <div class="kv" id="k-pol"></div>
+        <div class="eq" id="eq-pol">L_pol = −20·log₁₀|cos Δτ|      Faraday  Ω ≈ 2.36×10⁴ · B_av · TEC / f²</div>
+      </article>
+    </div>
+
+    <aside class="teach">
+      <h3>What to draw out of this module</h3>
+      <ul>
+        <li><b>Rain fade is a frequency cliff, not a slope.</b> Hold the rain rate at the Ho Chi Minh City value and step C → Ku → Ka. The attenuation goes from under a decibel to tens of decibels for exactly the same storm. This is the single strongest argument in the course for why tropical Ka-band systems need adaptive coding.</li>
+        <li><b>Elevation is a lever you can actually pull.</b> At 20 GHz in Ho Chi Minh City, dropping from 50° to 15° triples the slant path through the rain cell and takes the 0.01 % fade from about 35 dB to 64 dB. It is the reason a Vietnamese earth station prefers a satellite near its own longitude.</li>
+        <li><b>Horizontal polarization always suffers more</b> — raindrops flatten as they fall, so they present a wider cross-section to a horizontal field. Toggle the polarization and watch k and α move.</li>
+        <li><b>Frequency reuse is only as good as the worst fade.</b> In the right-hand panel, rain depolarization and Faraday rotation both eat the cross-polar discrimination that dual-polarization capacity depends on.</li>
+      </ul>
+      <p class="src">k and α interpolated log-log from ITU-R P.838-3 · path reduction from ITU-R P.618 · Faraday with B_av ≈ 3×10⁻⁵ T</p>
+    </aside>
+  </section>
+
+  <!-- ======================= M3 : ANTENNAS ======================= -->
+  <section class="mod" id="m3">
+    <header class="mhead">
+      <div class="chips"><span class="chip k">Lecture 5</span><span class="chip k">Lecture 10</span><span class="chip">Roddy ch. 6, 12</span></div>
+      <h1>Antennas, Beams and Free-Space Loss</h1>
+      <p class="lede">Gain is not amplification — it is concentration, and the bill arrives as beamwidth. Size a reflector and watch the main lobe narrow, the sidelobes appear and the pointing tolerance shrink; then steer a phased array electronically and see the same aperture rule at work.</p>
+    </header>
+
+    <div class="panels two">
+      <article class="panel">
+        <header><h2>Parabolic reflector</h2><p class="ph">§5.9 gain and efficiency · §5.10 effective aperture · §5.12 beamwidth and sidelobes</p></header>
+        <div class="viz"><canvas id="c-pat" width="900" height="470"></canvas></div>
+        <div class="ctrls c2">
+          <label class="ctrl"><span class="lab"><span>Diameter D</span><b id="v-D">3.0 m</b></span>
+            <input type="range" id="s-D" min="0.3" max="35" value="3" step="0.1"></label>
+          <label class="ctrl"><span class="lab"><span>Frequency</span><b id="v-af">12.0 GHz</b></span>
+            <input type="range" id="s-af" min="1" max="40" value="12" step="0.5"></label>
+          <label class="ctrl"><span class="lab"><span>Aperture efficiency η</span><b id="v-eta">0.65</b></span>
+            <input type="range" id="s-eta" min="0.35" max="0.85" value="0.65" step="0.01"></label>
+          <label class="ctrl"><span class="lab"><span>Mispointing</span><b id="v-mis">0.00°</b></span>
+            <input type="range" id="s-mis" min="0" max="3" value="0" step="0.01"></label>
+        </div>
+        <div class="seg" id="seg-ant">
+          <button data-a="0.6,12,0.65" aria-pressed="true">Home DTH 60 cm</button>
+          <button data-a="1.8,14,0.65">VSAT 1.8 m Ku</button>
+          <button data-a="9,6,0.68">Earth station 9 m C</button>
+          <button data-a="34,8.4,0.70">DSN 34 m X</button>
+        </div>
+        <div class="kv" id="k-ant"></div>
+        <div class="eq">G = η(πD/λ)²      θ₃dB ≈ 70λ/D      A_eff = Gλ²/4π      far field  d &gt; 2D²/λ</div>
+      </article>
+
+      <article class="panel">
+        <header><h2>Phased array beam steering</h2><p class="ph">§5.14 array factor and electronic steering · §5.15 Friis transmission</p></header>
+        <div class="viz"><canvas id="c-arr" width="900" height="470"></canvas></div>
+        <div class="ctrls c2">
+          <label class="ctrl"><span class="lab"><span>Number of elements N</span><b id="v-N">16</b></span>
+            <input type="range" id="s-N" min="2" max="64" value="16" step="1"></label>
+          <label class="ctrl"><span class="lab"><span>Element spacing d</span><b id="v-dsp">0.50 λ</b></span>
+            <input type="range" id="s-dsp" min="0.1" max="1.5" value="0.5" step="0.01"></label>
+          <label class="ctrl"><span class="lab"><span>Steer angle θ₀</span><b id="v-st">0°</b></span>
+            <input type="range" id="s-st" min="-80" max="80" value="0" step="1"></label>
+        </div>
+        <div class="kv" id="k-arr"></div>
+        <div class="eq">AF(θ) = sin(Nψ/2) / (N·sin(ψ/2)),   ψ = kd·sinθ + β,   β = −kd·sinθ₀</div>
+        <p class="note">Grating lobes appear once d/λ &gt; 1/(1+|sin θ₀|) — push the spacing past half a wavelength and a second beam walks in from the horizon.</p>
+      </article>
+    </div>
+
+    <aside class="teach">
+      <h3>What to draw out of this module</h3>
+      <ul>
+        <li><b>Six decibels of gain costs half the beamwidth.</b> Double D and the gain rises 6 dB while θ₃dB halves. Then add mispointing: a 9 m C-band dish off by a quarter of a degree has already given back most of what the extra aperture bought.</li>
+        <li><b>The same λ/D rule governs both panels.</b> A 16-element array at half-wavelength spacing has the same beamwidth as a reflector two apertures wide — concentration depends on electrical size, never on the technology.</li>
+        <li><b>Steering is not free.</b> Push θ₀ toward 60° and watch the main lobe broaden and the gain drop: the array's projected aperture shrinks as cos θ₀.</li>
+        <li><b>Grating lobes are an aliasing problem.</b> Spacing beyond half a wavelength under-samples the aperture, exactly as a sample rate below Nyquist does in Module 5.</li>
+      </ul>
+      <p class="src">Uniformly illuminated circular aperture, |2J₁(u)/u|² with u = (πD/λ)sin θ · uniform linear array factor</p>
+    </aside>
+  </section>
+
+  <!-- ======================= M4 : LINK BUDGET ======================= -->
+  <section class="mod" id="m4">
+    <header class="mhead">
+      <div class="chips"><span class="chip k">Lecture 6</span><span class="chip k">Lecture 10</span><span class="chip">Roddy ch. 12</span></div>
+      <h1>The Space Link Budget</h1>
+      <p class="lede">The accounting sheet the whole course converges on. Uplink and downlink are computed separately, combined the way powers add, and then rained on — so the class can watch the famous double penalty do its work: the signal falls and the noise temperature rises at the same instant.</p>
+    </header>
+
+    <div class="panels">
+      <article class="panel">
+        <header><h2>Uplink · downlink · combined</h2><p class="ph">§10.2 EIRP · §10.3 free-space loss · §10.5 system noise · §10.6 G/T · §10.10 combined C/N</p></header>
+        <div class="seg" id="seg-lb">
+          <button data-lb="c" aria-pressed="true">C-band GEO trunk</button>
+          <button data-lb="ku">Ku-band DTH</button>
+          <button data-lb="ka">Ka-band VSAT</button>
+        </div>
+        <div class="ctrls c2">
+          <label class="ctrl"><span class="lab"><span>Downlink frequency</span><b id="v-lf">4.00 GHz</b></span>
+            <input type="range" id="s-lf" min="1" max="32" value="4" step="0.25"></label>
+          <label class="ctrl"><span class="lab"><span>Satellite EIRP</span><b id="v-eirp">34.0 dBW</b></span>
+            <input type="range" id="s-eirp" min="20" max="62" value="34" step="0.5"></label>
+          <label class="ctrl"><span class="lab"><span>Earth-station dish D</span><b id="v-lD">3.0 m</b></span>
+            <input type="range" id="s-lD" min="0.45" max="32" value="3" step="0.05"></label>
+          <label class="ctrl"><span class="lab"><span>LNA noise temperature</span><b id="v-tlna">45 K</b></span>
+            <input type="range" id="s-tlna" min="15" max="300" value="45" step="5"></label>
+          <label class="ctrl"><span class="lab"><span>Feeder loss before LNA</span><b id="v-lfd">0.50 dB</b></span>
+            <input type="range" id="s-lfd" min="0" max="3" value="0.5" step="0.05"></label>
+          <label class="ctrl"><span class="lab"><span>Elevation angle</span><b id="v-lel">35°</b></span>
+            <input type="range" id="s-lel" min="5" max="90" value="35" step="1"></label>
+          <label class="ctrl"><span class="lab"><span>Rain attenuation on downlink</span><b id="v-lrain">0.0 dB</b></span>
+            <input type="range" id="s-lrain" min="0" max="25" value="0" step="0.5"></label>
+          <label class="ctrl"><span class="lab"><span>Information bit rate</span><b id="v-lrb">36 Mbit/s</b></span>
+            <input type="range" id="s-lrb" min="1" max="300" value="36" step="1"></label>
+        </div>
+        <div class="kv" id="k-lb"></div>
+      </article>
+    </div>
+
+    <div class="panels two">
+      <article class="panel">
+        <header><h2>Downlink waterfall</h2><p class="ph">every term from satellite transmitter to demodulator input</p></header>
+        <div class="lad" id="lad-lb"></div>
+      </article>
+      <article class="panel">
+        <header><h2>System noise temperature</h2><p class="ph">§10.5 antenna noise, lossy feeder and the amplifier cascade</p></header>
+        <div class="viz"><canvas id="c-noise" width="900" height="360"></canvas></div>
+        <div class="steps" id="st-noise"></div>
+        <div class="eq">T_s = T_ant/L_f + T_F(1 − 1/L_f) + T_LNA + T₂/G₁ + T₃/(G₁G₂)</div>
+      </article>
+    </div>
+
+    <aside class="teach">
+      <h3>What to draw out of this module</h3>
+      <ul>
+        <li><b>Put the low-noise amplifier at the feed.</b> Push the feeder loss from 0.5 dB to 3 dB and the system temperature climbs steeply — a decibel of loss ahead of the LNA costs signal and adds noise in the same stroke. This is why the LNB is bolted to the dish and not to the television.</li>
+        <li><b>The double penalty.</b> Drag the rain slider. The carrier drops by the attenuation, and the antenna temperature rises toward the physical temperature of the rain cell, because an absorber is also an emitter. The C/N falls faster than the attenuation alone would predict — always ask the class to predict the ratio before they see it.</li>
+        <li><b>Combined C/N is dominated by the weaker link.</b> Powers add as reciprocals, so improving an already-strong uplink changes almost nothing. Make them find the knee.</li>
+        <li><b>G/T is the only receiver number that matters.</b> Trade dish diameter against LNA temperature and find two configurations with the same G/T but very different cost.</li>
+      </ul>
+      <p class="src">Boltzmann −228.6 dBW/K/Hz · T_m = 275 K for the rain medium · sky noise from a simple elevation/zenith-opacity model</p>
+    </aside>
+  </section>
+
+  <!-- ======================= M5 : SIGNALS & CODING ======================= -->
+  <section class="mod" id="m5">
+    <header class="mhead">
+      <div class="chips"><span class="chip k">Lecture 7</span><span class="chip k">Lecture 8</span><span class="chip">Roddy ch. 10–11</span></div>
+      <h1>Digital Signals, Modulation and Coding</h1>
+      <p class="lede">Where the decibels earned in Modules 3 and 4 are finally spent on bits. Add noise to a live constellation and count the errors, close the eye with the wrong filter roll-off, then buy back the margin with a code — and watch the Shannon wall refuse to move.</p>
+    </header>
+
+    <div class="panels two">
+      <article class="panel">
+        <header><h2>Constellation under noise</h2><p class="ph">§7.10 digital carrier modulation · §7.11 BER and E_b/N₀</p></header>
+        <div class="viz"><canvas id="c-const" width="900" height="470"></canvas></div>
+        <div class="ctrls c2">
+          <label class="ctrl"><span class="lab"><span>E_b/N₀</span><b id="v-ebn">8.0 dB</b></span>
+            <input type="range" id="s-ebn" min="-2" max="20" value="8" step="0.1"></label>
+          <label class="ctrl"><span class="lab"><span>Symbols drawn</span><b id="v-nsym">1500</b></span>
+            <input type="range" id="s-nsym" min="200" max="6000" value="1500" step="100"></label>
+        </div>
+        <div class="seg dn" id="seg-mod">
+          <button data-m="BPSK" aria-pressed="true">BPSK</button>
+          <button data-m="QPSK">QPSK</button>
+          <button data-m="8PSK">8PSK</button>
+          <button data-m="16QAM">16QAM</button>
+          <button data-m="16APSK">16APSK</button>
+        </div>
+        <div class="kv" id="k-const"></div>
+      </article>
+
+      <article class="panel">
+        <header><h2>BER curves and coding gain</h2><p class="ph">§8.8 coding gain · §8.10 the Shannon limit · §8.11 turbo and LDPC</p></header>
+        <div class="viz"><canvas id="c-ber" width="900" height="470"></canvas></div>
+        <div class="seg dn" id="seg-code">
+          <button data-c="none" aria-pressed="true">Uncoded</button>
+          <button data-c="conv">Conv (7,½) Viterbi</button>
+          <button data-c="rsconv">RS + conv</button>
+          <button data-c="turbo">Turbo / LDPC ½</button>
+        </div>
+        <div class="kv" id="k-ber"></div>
+        <p class="note">The dashed red wall at −1.59 dB is Shannon's bound as bandwidth grows without limit. No code reaches it; every code in the course is a claim about how close you can get and how much complexity that costs.</p>
+      </article>
+
+      <article class="panel">
+        <header><h2>Eye diagram and intersymbol interference</h2><p class="ph">§7.9 Nyquist, raised-cosine filtering and the eye</p></header>
+        <div class="viz"><canvas id="c-eye" width="900" height="400"></canvas></div>
+        <div class="ctrls c2">
+          <label class="ctrl"><span class="lab"><span>Roll-off factor α</span><b id="v-roll">0.35</b></span>
+            <input type="range" id="s-roll" min="0" max="1" value="0.35" step="0.01"></label>
+          <label class="ctrl"><span class="lab"><span>Timing offset</span><b id="v-toff">0 %</b></span>
+            <input type="range" id="s-toff" min="-50" max="50" value="0" step="1"></label>
+          <label class="ctrl"><span class="lab"><span>Noise</span><b id="v-enoise">0.00</b></span>
+            <input type="range" id="s-enoise" min="0" max="0.3" value="0" step="0.005"></label>
+        </div>
+        <div class="kv" id="k-eye"></div>
+      </article>
+
+      <article class="panel">
+        <header><h2>Hamming (7,4) — break it and watch it heal</h2><p class="ph">§8.3 generator matrix, parity-check matrix and the syndrome</p></header>
+        <div class="viz"><canvas id="c-ham" width="900" height="400"></canvas></div>
+        <div class="ctrls c2">
+          <label class="ctrl"><span class="lab"><span>Message bits d₁d₂d₃d₄</span><b id="v-msg">1011</b></span>
+            <input type="range" id="s-msg" min="0" max="15" value="11" step="1"></label>
+        </div>
+        <div class="seg" id="seg-flip"></div>
+        <div class="kv" id="k-ham"></div>
+        <p class="note">Flip one bit anywhere in the seven and the syndrome names its position exactly. Flip two and the syndrome still points somewhere — confidently, and at the wrong bit. That gap is what d_min = 3 means.</p>
+      </article>
+    </div>
+
+    <aside class="teach">
+      <h3>What to draw out of this module</h3>
+      <ul>
+        <li><b>BPSK and QPSK cost the same energy per bit.</b> Switch between them at a fixed E_b/N₀ and the measured error rate barely moves — QPSK simply packs two bits into the same symbol. Then try 16QAM and watch the price of spectral efficiency appear.</li>
+        <li><b>Coding gain is real decibels.</b> Pick a target of 10⁻⁵ and read the horizontal distance between the uncoded curve and the turbo curve: close to 9 dB, obtained by changing software rather than hardware. The same 9 dB would otherwise mean eight times the transmitter power.</li>
+        <li><b>The eye closes from two directions.</b> Reduce the roll-off toward zero for a narrow spectrum and ISI closes the eye horizontally; add noise and it closes vertically. Sampling instant matters as much as signal-to-noise.</li>
+        <li><b>Single-error correction is a geometric fact.</b> With d_min = 3 the spheres of radius one around each codeword do not touch; with two errors you land inside the wrong sphere. Demonstrate the double-error failure deliberately — it lands better than the success case.</li>
+      </ul>
+      <p class="src">Gray-mapped constellations · theory curves from the Q-function · coding gains at BER 10⁻⁵ from Lecture 8</p>
+    </aside>
+  </section>
+
+  <!-- ======================= M6 : ACCESS & NETWORKS ======================= -->
+  <section class="mod" id="m6">
+    <header class="mhead">
+      <div class="chips"><span class="chip k">Lecture 11</span><span class="chip k">Lecture 12</span><span class="chip k">Lecture 13</span></div>
+      <h1>Multiple Access, Networks and Services</h1>
+      <p class="lede">One transponder, many users. Three ways to divide it, a transport protocol that was never designed for a half-second round trip, and the positioning service that turns the same geometry from Module 1 into a fix on the ground.</p>
+    </header>
+
+    <div class="panels two">
+      <article class="panel">
+        <header><h2>Sharing one transponder</h2><p class="ph">§11.3 FDMA · §11.6 TDMA frames and guard time · §11.8 CDMA</p></header>
+        <div class="viz"><canvas id="c-ma" width="900" height="420"></canvas></div>
+        <div class="seg" id="seg-ma">
+          <button data-ma="fdma" aria-pressed="true">FDMA</button>
+          <button data-ma="tdma">TDMA</button>
+          <button data-ma="cdma">CDMA</button>
+        </div>
+        <div class="ctrls c2">
+          <label class="ctrl"><span class="lab"><span>Active users</span><b id="v-users">6</b></span>
+            <input type="range" id="s-users" min="1" max="16" value="6" step="1"></label>
+          <label class="ctrl"><span class="lab"><span>Guard band / guard time</span><b id="v-guard">8 %</b></span>
+            <input type="range" id="s-guard" min="0" max="30" value="8" step="1"></label>
+          <label class="ctrl"><span class="lab"><span>Transponder bandwidth</span><b id="v-bw">36 MHz</b></span>
+            <input type="range" id="s-bw" min="4" max="250" value="36" step="1"></label>
+        </div>
+        <div class="kv" id="k-ma"></div>
+      </article>
+
+      <article class="panel">
+        <header><h2>TCP over a satellite link</h2><p class="ph">§12.8 congestion control · §12.9 bandwidth-delay product · §12.12 split connections</p></header>
+        <div class="viz"><canvas id="c-tcp" width="900" height="420"></canvas></div>
+        <div class="ctrls c2">
+          <label class="ctrl"><span class="lab"><span>Link rate</span><b id="v-tr">10 Mbit/s</b></span>
+            <input type="range" id="s-tr" min="1" max="200" value="10" step="1"></label>
+          <label class="ctrl"><span class="lab"><span>Receive window</span><b id="v-tw">64 kB</b></span>
+            <input type="range" id="s-tw" min="8" max="2048" value="64" step="8"></label>
+          <label class="ctrl"><span class="lab"><span>Packet loss rate</span><b id="v-tl">0.10 %</b></span>
+            <input type="range" id="s-tl" min="0" max="300" value="10" step="1"></label>
+        </div>
+        <div class="seg dn" id="seg-rtt">
+          <button data-rtt="20" aria-pressed="false">Terrestrial 20 ms</button>
+          <button data-rtt="50">LEO 50 ms</button>
+          <button data-rtt="180">MEO 180 ms</button>
+          <button data-rtt="540" aria-pressed="true">GEO 540 ms</button>
+        </div>
+        <div class="kv" id="k-tcp"></div>
+      </article>
+
+      <article class="panel">
+        <header><h2>GNSS trilateration and dilution of precision</h2><p class="ph">§13.16 GPS principle, clock bias, DOP and differential correction</p></header>
+        <div class="viz"><canvas id="c-gps" width="900" height="420"></canvas></div>
+        <div class="ctrls c2">
+          <label class="ctrl"><span class="lab"><span>Satellites in view</span><b id="v-gn">4</b></span>
+            <input type="range" id="s-gn" min="3" max="10" value="4" step="1"></label>
+          <label class="ctrl"><span class="lab"><span>Spread across the sky</span><b id="v-gs">90°</b></span>
+            <input type="range" id="s-gs" min="10" max="180" value="90" step="2"></label>
+          <label class="ctrl"><span class="lab"><span>Pseudorange error σ</span><b id="v-ge">5.0 m</b></span>
+            <input type="range" id="s-ge" min="0.5" max="30" value="5" step="0.5"></label>
+        </div>
+        <div class="kv" id="k-gps"></div>
+        <p class="note">Squeeze the satellites into one patch of sky and the position ellipse stretches without any single measurement getting worse. Geometry, not ranging accuracy, is what fails in an urban canyon.</p>
+      </article>
+
+      <article class="panel">
+        <header><h2>Digital television — from pixels to transponder</h2><p class="ph">§13.3 bit rates for digital TV · §13.4 MPEG compression · §13.5 FEC overhead</p></header>
+        <div class="viz"><canvas id="c-dtv" width="900" height="420"></canvas></div>
+        <div class="ctrls c2">
+          <label class="ctrl"><span class="lab"><span>Format</span><b id="v-fmt">1080i HD</b></span>
+            <input type="range" id="s-fmt" min="0" max="3" value="1" step="1"></label>
+          <label class="ctrl"><span class="lab"><span>Compression ratio</span><b id="v-cmp">60 : 1</b></span>
+            <input type="range" id="s-cmp" min="10" max="300" value="60" step="5"></label>
+          <label class="ctrl"><span class="lab"><span>FEC code rate</span><b id="v-fec">3/4</b></span>
+            <input type="range" id="s-fec" min="0" max="5" value="3" step="1"></label>
+        </div>
+        <div class="kv" id="k-dtv"></div>
+      </article>
+    </div>
+
+    <aside class="teach">
+      <h3>What to draw out of this module</h3>
+      <ul>
+        <li><b>All three access schemes pay a tax.</b> FDMA pays in guard bands and intermodulation backoff, TDMA pays in guard time and preamble, CDMA pays in processing gain and self-interference. Raise the user count and watch which one degrades first.</li>
+        <li><b>A GEO hop breaks TCP arithmetic.</b> At 540 ms round trip a 64 kB window caps throughput near 1 Mbit/s no matter how fast the link is. Show the bandwidth-delay product, then open the window and watch the ceiling lift — this is exactly what RFC 2488 recommends.</li>
+        <li><b>Loss is interpreted as congestion.</b> Add a tenth of a percent of packet loss and the Mathis-model throughput collapses on a long link, because TCP reads satellite bit errors as a signal to slow down.</li>
+        <li><b>Compression is what makes DTH possible.</b> Uncompressed HD needs roughly a gigabit per second; a transponder has tens of megabits. Everything between those two numbers is MPEG, and the FEC rate then decides how much of the channel carries payload at all.</li>
+      </ul>
+      <p class="src">Mathis throughput bound · GDOP from the geometry matrix · studio rates per ITU-R BT.601 / BT.709</p>
+    </aside>
+  </section>
+
+  </main>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
