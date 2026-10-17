@@ -20,22 +20,33 @@ fonts have loaded once. Each module is deep-linkable: `index.html#m4` opens the 
 Keyboard-free, projector-friendly. A **Light** / **Dark** button sits in the top bar — dark is the
 default for a darkened lecture hall, light reads better on a bright projector.
 
-## Publishing to GitHub Pages
+## Live site
+
+**https://nntminh1983.github.io/spacecomm-virtual-lab/**
+
+Served from branch `main`, folder `/ (root)`. The `.nojekyll` file at the root stops GitHub
+from running Jekyll over `assets/`.
+
+Deep links work for every module, so a lecture can jump straight in:
+
+| Module | Link |
+|---|---|
+| 1 Orbits and look angles | `…/spacecomm-virtual-lab/#m1` |
+| 2 Rain fade and polarization | `…/#m2` |
+| 3 Antennas and beams | `…/#m3` |
+| 4 Link budget | `…/#m4` |
+| 5 Modulation and coding | `…/#m5` |
+| 6 Access and networks | `…/#m6` |
+
+### Updating it
+
+Edit the files, then:
 
 ```bash
-git init
-git add .
-git commit -m "Space Comm Virtual Lab"
-git branch -M main
-git remote add origin https://github.com/<user>/<repo>.git
-git push -u origin main
+git add -A && git commit -m "describe the change" && git push
 ```
 
-Then in the repository: **Settings → Pages → Source: deploy from branch `main`, folder `/ (root)`**.
-The lab appears at `https://<user>.github.io/<repo>/` within a minute or two.
-
-To publish it as a subfolder of an existing course site, copy this whole folder in and link to
-`<existing-site>/spacecomm-lab/`. All paths are relative, so no configuration changes are needed.
+Pages rebuilds in under a minute. Hard-refresh (Ctrl-F5) to bypass the browser cache.
 
 ## Presets built in
 
