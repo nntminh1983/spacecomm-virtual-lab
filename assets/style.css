@@ -1,19 +1,23 @@
 /* PH035IU — Space Communication Virtual Lab
    Console palette: slate ground, amber = uplink / transmit, teal = downlink / receive. */
 
+/* Light is the default and lives on bare :root, so the page is never unstyled
+   before the script runs. Dark is an explicit opt-in via the top-bar toggle. */
+:root{
+  --bg:#F0F3F6; --panel:#FFFFFF; --panel2:#E6EBF0; --sunk:#FAFCFD;
+  --line:#BFCAD6; --line2:#DCE3EA;
+  --ink:#121A23; --soft:#46545F; --faint:#5F6E7C;
+  --up:#A85309; --down:#0E6E68; --hot:#B32D1C; --ok:#27703C; --violet:#5544B8;
+  --grid:#DDE4EB; --shadow:0 1px 2px rgba(18,26,35,.07);
+  --knock:#FFFFFF;          /* text drawn on top of a saturated fill */
+}
 :root[data-ui="dark"]{
   --bg:#0B0F14; --panel:#131A22; --panel2:#1B2430; --sunk:#0E141B;
   --line:#2A3542; --line2:#212B36;
-  --ink:#E9EEF4; --soft:#9AA8B7; --faint:#6B7A8A;
+  --ink:#E9EEF4; --soft:#9AA8B7; --faint:#7D8C9B;
   --up:#F59B3C; --down:#35BDB3; --hot:#E4604A; --ok:#7BD48A; --violet:#9C8CF0;
   --grid:#1E2832; --shadow:0 1px 0 rgba(0,0,0,.45);
-}
-:root[data-ui="light"]{
-  --bg:#EBEEF2; --panel:#FFFFFF; --panel2:#E2E7ED; --sunk:#F5F7F9;
-  --line:#C3CCD7; --line2:#D6DEE6;
-  --ink:#0F1720; --soft:#4F5E6C; --faint:#748496;
-  --up:#A95108; --down:#0D6B66; --hot:#A3301F; --ok:#2C7A42; --violet:#5A48C0;
-  --grid:#D4DCE4; --shadow:0 1px 2px rgba(15,23,32,.08);
+  --knock:#0B0F14;
 }
 
 *{box-sizing:border-box}
@@ -37,7 +41,7 @@ code,.mono{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace}
 }
 .top .code{
   font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
-  color:var(--bg);background:var(--up);padding:4px 8px;border-radius:3px;font-weight:600;
+  color:var(--knock);background:var(--up);padding:4px 8px;border-radius:3px;font-weight:600;
 }
 .top .name{font-family:"Archivo",sans-serif;font-weight:700;font-size:15px}
 .top .sub{color:var(--faint);font-size:12px;font-family:"IBM Plex Mono",monospace}
@@ -141,7 +145,7 @@ select,input[type=number],input[type=text]{
   padding:5px 9px;cursor:pointer;font-family:"IBM Plex Mono",monospace;font-size:11.5px;
 }
 .seg button:hover{color:var(--ink)}
-.seg button[aria-pressed="true"]{background:var(--up);border-color:var(--up);color:var(--bg);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--up);border-color:var(--up);color:var(--knock);font-weight:600}
 .seg.dn button[aria-pressed="true"]{background:var(--down);border-color:var(--down)}
 
 /* readouts */

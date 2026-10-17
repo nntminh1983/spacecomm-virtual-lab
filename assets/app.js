@@ -20,7 +20,30 @@ function C() {
   return { bg: g("--bg"), panel: g("--panel"), sunk: g("--sunk"), line: g("--line"),
            line2: g("--line2"), ink: g("--ink"), soft: g("--soft"), faint: g("--faint"),
            up: g("--up"), down: g("--down"), hot: g("--hot"), ok: g("--ok"),
-           violet: g("--violet"), grid: g("--grid") };
+           violet: g("--violet"), grid: g("--grid"), knock: g("--knock") };
+}
+
+/* Readable text colour for a label sitting on an arbitrary fill.
+   Needed because the access-scheme palette mixes dark accents with pale tints. */
+function onFill(hex, alpha, under) {
+  let h = String(hex).trim().replace("#", "");
+  if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+  const n = parseInt(h, 16);
+  if (!isFinite(n)) return "#000";
+  let r = (n >> 16) & 255, gg = (n >> 8) & 255, b = n & 255;
+  if (alpha != null && alpha < 1 && under) {
+    let u = String(under).trim().replace("#", "");
+    if (u.length === 3) u = u[0] + u[0] + u[1] + u[1] + u[2] + u[2];
+    const m = parseInt(u, 16);
+    if (isFinite(m)) {
+      r = r * alpha + ((m >> 16) & 255) * (1 - alpha);
+      gg = gg * alpha + ((m >> 8) & 255) * (1 - alpha);
+      b = b * alpha + (m & 255) * (1 - alpha);
+    }
+  }
+  const sr = [r, gg, b].map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+  const L = 0.2126 * sr[0] + 0.7152 * sr[1] + 0.0722 * sr[2];
+  return L > 0.42 ? "#10171E" : "#FFFFFF";
 }
 
 const DESIGN = new WeakMap();
@@ -209,15 +232,21 @@ document.addEventListener("click", e => {
   if (b) go(b.dataset.go);
 });
 
-/* theme */
+/* theme — light is the default (bare :root), dark is the opt-in */
 const root = document.documentElement;
-root.setAttribute("data-ui", "dark");
 $("#theme").addEventListener("click", () => {
-  const d = root.getAttribute("data-ui") === "dark";
-  root.setAttribute("data-ui", d ? "light" : "dark");
-  $("#theme").textContent = d ? "Dark" : "Light";
+  const next = root.getAttribute("data-ui") === "dark" ? "light" : "dark";
+  root.setAttribute("data-ui", next);
+  $("#theme").textContent = next === "dark" ? "Light" : "Dark";
+  try { localStorage.setItem("ph035-theme", next); } catch (e) {}
   drawAll();
 });
+try {
+  if (localStorage.getItem("ph035-theme") === "dark") {
+    root.setAttribute("data-ui", "dark");
+    $("#theme").textContent = "Light";
+  }
+} catch (e) {}
 
 /* segmented button helper */
 function seg(sel, onPick) {
@@ -905,7 +934,7 @@ function linkBudget() {
   parts.forEach((p, i) => {
     const w = p[1] / Ts * bw;
     if (w > 42) {
-      txt(g, fx(p[1], 0) + " K", bx + acc + w / 2, by + bh / 2, c.bg, 11, "center");
+      txt(g, fx(p[1], 0) + " K", bx + acc + w / 2, by + bh / 2, onFill(p[2], 1, c.panel), 11, "center");
     }
     const lx = bx + (i % 3) * (bw / 3), ly = by + bh + 28 + Math.floor(i / 3) * 22;
     g.fillStyle = p[2]; g.fillRect(lx, ly - 5, 10, 10);
@@ -987,7 +1016,7 @@ function constellation() {
   g.globalAlpha = 1; g.restore();
   M.pts.forEach(p => {
     disc(g, PX(p[0]), PY(p[1]), 4.5, c.ink);
-    g.save(); g.strokeStyle = c.bg; g.lineWidth = 1.4; g.beginPath(); g.arc(PX(p[0]), PY(p[1]), 4.5, 0, 7); g.stroke(); g.restore();
+    g.save(); g.strokeStyle = c.sunk; g.lineWidth = 1.4; g.beginPath(); g.arc(PX(p[0]), PY(p[1]), 4.5, 0, 7); g.stroke(); g.restore();
   });
   g.save(); g.strokeStyle = c.line; g.strokeRect(cx - R, cy - R, 2 * R, 2 * R); g.restore();
   txt(g, modSel + "  ·  " + k + " bit/symbol", cx - R, cy - R - 14, c.ink, 12);
@@ -1213,7 +1242,7 @@ function hamming() {
     disc(g, s[0], s[1], 15, bad ? c.hot : c.panel);
     g.save(); g.strokeStyle = bad ? c.hot : c.line; g.lineWidth = 1.4;
     g.beginPath(); g.arc(s[0], s[1], 15, 0, 7); g.stroke(); g.restore();
-    txt(g, String(rx[s[3]]), s[0], s[1] - 1, bad ? c.bg : c.ink, 14, "center");
+    txt(g, String(rx[s[3]]), s[0], s[1] - 1, bad ? onFill(c.hot, 1, c.panel) : c.ink, 14, "center");
     txt(g, s[2], s[0], s[1] + 25, c.faint, 9, "center");
   });
   txt(g, "HAMMING (7,4) — EACH CIRCLE MUST HOLD AN EVEN NUMBER OF ONES", 24, 20, c.faint, 10);
@@ -1268,7 +1297,7 @@ function multipleAccess() {
   txt(g, "FREQUENCY", 0, 0, c.soft, 10.5, "center"); g.restore();
   txt(g, "TIME →", bx + bw, by + bh + 20, c.soft, 10.5, "right");
 
-  const palette = [c.up, c.down, c.violet, c.ok, c.hot, "#7FA7D8", "#D89BC0", "#C0C96F"];
+  const palette = [c.up, c.down, c.violet, c.ok, c.hot, "#3F77B8", "#B0518A", "#7A7F1F"];
   let eff = 0, perUser = 0, note = "";
   if (maSel === "fdma") {
     const gb = gp / 100;
@@ -1278,7 +1307,8 @@ function multipleAccess() {
       const h = slotH * (1 - gb);
       g.fillStyle = palette[i % palette.length]; g.globalAlpha = .75;
       g.fillRect(bx + 1, y + slotH * gb / 2, bw - 2, h); g.globalAlpha = 1;
-      txt(g, "user " + (i + 1), bx + 8, y + slotH / 2, c.bg, 10.5);
+      if (h > 13) txt(g, "user " + (i + 1), bx + 8, y + slotH / 2,
+                      onFill(palette[i % palette.length], .75, c.sunk), 10.5);
     }
     eff = (1 - gb) * (n > 1 ? 1 : 1);
     const backoff = Math.min(6, 1.2 * Math.log2(Math.max(1, n)));
@@ -1292,7 +1322,8 @@ function multipleAccess() {
       const x = bx + i * slotW;
       g.fillStyle = palette[i % palette.length]; g.globalAlpha = .75;
       g.fillRect(x + slotW * gt / 2, by + 1, slotW * (1 - gt), bh - 2); g.globalAlpha = 1;
-      if (slotW > 40) txt(g, "u" + (i + 1), x + slotW / 2, by + bh / 2, c.bg, 11, "center");
+      if (slotW > 40) txt(g, "u" + (i + 1), x + slotW / 2, by + bh / 2,
+                          onFill(palette[i % palette.length], .75, c.sunk), 11, "center");
     }
     eff = 1 - gt;
     perUser = BW * eff / n;
@@ -1433,7 +1464,7 @@ function gps() {
     const x = cx + rr * Math.cos(th), y = cy + rr * Math.sin(th);
     lineTo(g, cx, cy, x, y, c.line, 1, [2, 3]);
     disc(g, x, y, 5.5, c.up);
-    txt(g, String(i + 1), x, y - 0.5, c.bg, 9, "center");
+    txt(g, String(i + 1), x, y - 0.5, onFill(c.up, 1, c.sunk), 9, "center");
   });
   disc(g, cx, cy, 3.5, c.ink);
   txt(g, "SKY VIEW", cx, 20, c.faint, 10, "center");
